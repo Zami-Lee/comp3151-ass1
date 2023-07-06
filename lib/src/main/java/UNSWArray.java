@@ -81,6 +81,7 @@ public class UNSWArray {
         }
     }
 
+
     private void createLock(int index) {
         ReadWriteLock newLock = new ReentrantReadWriteLock();
         locks.put(index, newLock);
@@ -98,7 +99,7 @@ public class UNSWArray {
     private void insertIntoArray(int index, int x) {
         // make copy of array +1 length
         array = Arrays.copyOf(array, array.length + 1);
-        // shift everything past value down
+        // shift everything past x down
         for (int i = array.length - 1; i > index; i--) {
             array[i] = array[i - 1];
         }
