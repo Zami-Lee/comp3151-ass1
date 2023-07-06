@@ -15,7 +15,7 @@ public class TestDelete {
         deleteThread1.start();
         deleteThread1.join();
 
-        int[] expected = {};
+        int[] expected = {-1};
         assertEquals(Arrays.toString(expected), Arrays.toString(array.getArray()));
     }
 
@@ -37,7 +37,7 @@ public class TestDelete {
         deleteThread1.join();
         deleteThread2.join();
 
-        int[] expected = {};
+        int[] expected = {-1, -1};
         assertEquals(Arrays.toString(expected), Arrays.toString(array.getArray()));
     }
 
@@ -65,7 +65,7 @@ public class TestDelete {
         deleteThread2.join();
         deleteThread3.join();
 
-        int[] expected = {2, 3, 4, 6, 7, 8, 9};
+        int[] expected = {-1, 2, 3, 4, -1, 6, 7, 8, 9, -1};
         assertEquals(Arrays.toString(expected), Arrays.toString(array.getArray()));
     }
 
@@ -87,7 +87,7 @@ public class TestDelete {
         deleteThread1.join();
         deleteThread2.join();
 
-        int[] expected = {1, 3};
+        int[] expected = {1, -1, 3};
         assertEquals(Arrays.toString(expected), Arrays.toString(array.getArray()));
     }
 
@@ -109,7 +109,29 @@ public class TestDelete {
         deleteThread1.join();
         insertThread1.join();
 
-        int[] expected = {1, 3, 4, 5};
+        int[] expected = {1, -1, 3, 4, 5};
+        assertEquals(Arrays.toString(expected), Arrays.toString(array.getArray()));
+    }
+
+    @Test
+    public void testDeleteAndInsertSamePosition2() throws InterruptedException {
+        UNSWArray array = new UNSWArray(2, 4, 5);
+
+        Thread deleteThread1 = new Thread(() -> {
+            array.delete(2);
+        });
+
+        Thread insertThread1 = new Thread(() -> {
+            array.insert(1);
+        });
+
+        deleteThread1.start();
+        insertThread1.start();
+
+        deleteThread1.join();
+        insertThread1.join();
+
+        int[] expected = {1, -1, 4, 5};
         assertEquals(Arrays.toString(expected), Arrays.toString(array.getArray()));
     }
 
@@ -123,6 +145,7 @@ public class TestDelete {
 
         Thread insertThread1 = new Thread(() -> {
             array.insert(7);
+            array.delete(4);
         });
 
         deleteThread1.start();
@@ -131,7 +154,37 @@ public class TestDelete {
         deleteThread1.join();
         insertThread1.join();
 
-        int[] expected = {1, 4, 5, 7};
+        int[] expected = {1, -1, -1, 5, 7};
+        assertEquals(Arrays.toString(expected), Arrays.toString(array.getArray()));
+    }
+
+    @Test
+    public void testDeleteMany() throws InterruptedException {
+        UNSWArray array = new UNSWArray(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+        Thread deleteThread1 = new Thread(() -> {
+            array.delete(1);
+            array.delete(3);
+            array.delete(5);
+            array.delete(7);
+            array.delete(9);
+        });
+
+        Thread deleteThread2 = new Thread(() -> {
+            array.delete(2);
+            array.delete(4);
+            array.delete(6);
+            array.delete(8);
+            array.delete(10);
+        });
+
+        deleteThread1.start();
+        deleteThread2.start();
+
+        deleteThread1.join();
+        deleteThread2.join();
+
+        int[] expected = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
         assertEquals(Arrays.toString(expected), Arrays.toString(array.getArray()));
     }
 }

@@ -52,7 +52,33 @@ public class UNSWArray {
     }
 
     public void delete(int x) {
-
+        // if array is empty, return empty array
+        System.out.println("deleting " + x);
+        if (array.length == 0) {
+            System.out.println("nothing to delete");
+        } else {
+            // find index
+            int index = binarySearch(x);
+            // if x does not exist
+            if (index < 0) {
+                System.out.println("element does not exist");
+                return;
+            } else {
+                // check if index is currently locked
+                while (locks.containsKey(index)) {
+                    // if yes, then try again
+                    index = binarySearch(x);
+                }
+                // if not locked, create lock + insert + release lock
+                try {
+                    createLock(index);
+                    array[index] = -1;
+                    System.out.println("deleted " + x);
+                } finally {
+                    releaseLock(index);
+                }
+            }
+        }
     }
 
     private void createLock(int index) {
@@ -68,7 +94,7 @@ public class UNSWArray {
         }
     }
 
-    // TODO: CLEAN UP NEGATIVE VALUES + CHECK DUPLICATES
+    // TODO: clean up negative values and do not insert duplicates
     private void insertIntoArray(int index, int x) {
         // make copy of array +1 length
         array = Arrays.copyOf(array, array.length + 1);
@@ -78,5 +104,33 @@ public class UNSWArray {
         }
         array[index] = x;
         System.out.println("inserted " + x);
+    }
+
+    // https://www.geeksforgeeks.org/binary-search/
+    private int binarySearch(int x) {
+        int low = 0;
+        int high = array.length - 1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+
+            // skip all negative values
+            while (array[mid] == -1 && mid <= high) {
+                mid++;
+            }
+
+            if (mid > high) {
+                return -1;
+            }
+
+            if (array[mid] == x) {
+                return mid;
+            } else if (array[mid] < x) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return -1;
     }
 }
