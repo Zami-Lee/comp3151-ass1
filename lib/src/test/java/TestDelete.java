@@ -131,7 +131,7 @@ public class TestDelete {
         deleteThread1.join();
         insertThread1.join();
 
-        int[] expected = {1, -1, 4, 5};
+        int[] expected = {-1, 1, 4, 5};
         assertEquals(Arrays.toString(expected), Arrays.toString(array.getArray()));
     }
 
@@ -141,6 +141,7 @@ public class TestDelete {
 
         Thread deleteThread1 = new Thread(() -> {
             array.delete(2);
+            array.insert(8);
         });
 
         Thread insertThread1 = new Thread(() -> {
@@ -154,7 +155,7 @@ public class TestDelete {
         deleteThread1.join();
         insertThread1.join();
 
-        int[] expected = {1, -1, -1, 5, 7};
+        int[] expected = {1, -1, -1, 5, 7, 8};
         assertEquals(Arrays.toString(expected), Arrays.toString(array.getArray()));
     }
 
