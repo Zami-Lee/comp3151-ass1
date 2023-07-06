@@ -61,7 +61,6 @@ public class UNSWArray {
         locks.remove(index, lock);
         if (lock != null && ((ReentrantReadWriteLock) lock).isWriteLockedByCurrentThread()) {
             lock.writeLock().unlock();
-            // locks.remove(index, lock);
         }
     }
 
