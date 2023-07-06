@@ -51,6 +51,10 @@ public class UNSWArray {
         }
     }
 
+    public void delete(int x) {
+
+    }
+
     private void createLock(int index) {
         ReadWriteLock newLock = new ReentrantReadWriteLock();
         locks.put(index, newLock);
@@ -64,7 +68,7 @@ public class UNSWArray {
         }
     }
 
-    // TODO: CLEAN UP NEGATIVE VALUES
+    // TODO: CLEAN UP NEGATIVE VALUES + CHECK DUPLICATES
     private void insertIntoArray(int index, int x) {
         // make copy of array +1 length
         array = Arrays.copyOf(array, array.length + 1);
