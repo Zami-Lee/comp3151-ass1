@@ -24,8 +24,7 @@ public class UNSWArray {
     // A variable to keep track of how much of the array we have currently used up
     private int currentMaxIndex;
 
-    // A variable to keep track of the current size of the array
-    // When we exceed space in the array we will make a new copy and double the size
+    // A variable to keep track of the size of the array
     private int currentArraySize;
 
     // === Private Helper Functions ===
