@@ -81,6 +81,10 @@ public class UNSWArray {
         }
     }
 
+    public boolean member(int x) {
+        return false;
+    }
+
 
     private void createLock(int index) {
         ReadWriteLock newLock = new ReentrantReadWriteLock();
@@ -98,6 +102,7 @@ public class UNSWArray {
     // TODO: clean up negative values and do not insert duplicates
     private void insertIntoArray(int index, int x) {
         // make copy of array +1 length
+        // TODO: CHECK ATOMIC
         array = Arrays.copyOf(array, array.length + 1);
         // shift everything past x down
         for (int i = array.length - 1; i > index; i--) {

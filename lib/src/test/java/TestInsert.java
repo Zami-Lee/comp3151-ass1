@@ -119,4 +119,34 @@ public class TestInsert {
         assertEquals(Arrays.toString(expected), Arrays.toString(array.getArray()));
     }
 
+    @Test
+    public void testInsertMany() throws InterruptedException {
+        UNSWArray array = new UNSWArray();
+
+        Thread insertThread1 = new Thread(() -> {
+            array.insert(1);
+            array.insert(3);
+            array.insert(5);
+            array.insert(6);
+            array.insert(8);
+            array.insert(10);
+        });
+
+        Thread insertThread2 = new Thread(() -> {
+            array.insert(2);
+            array.insert(4);
+            array.insert(7);
+            array.insert(9);
+        });
+
+        insertThread1.start();
+        insertThread2.start();
+
+        insertThread1.join();
+        insertThread2.join();
+
+        int[] expected = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        assertEquals(Arrays.toString(expected), Arrays.toString(array.getArray()));
+    }
+
 }
