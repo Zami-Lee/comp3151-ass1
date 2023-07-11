@@ -2,7 +2,6 @@ import java.util.concurrent.locks.*;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Semaphore;
-import java.lang.Thread.*;
 
 public class UNSWArray {
     // === Class Attributes ===
@@ -117,7 +116,6 @@ public class UNSWArray {
         } catch (InterruptedException e) {
             return -1; // we were unable to put it in the queue
         }
-
 
         // Now attempt to acquire the insertQueueDrain lock so we can drain from the insertQueue and update the actual array
         boolean ourLock = insertQueueDrainLock.tryLock();
