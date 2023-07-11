@@ -134,8 +134,8 @@ public class TestInsert2 {
     }
 
     @Test
-    public void testFullQueue() throws InterruptedException {
-        UNSWArray a1 = new UNSWArray(20);
+    public void TestThree() throws InterruptedException {
+        UNSWArray a1 = new UNSWArray(40);
 
         Thread thread1 = new Thread(() -> {
             for (int i = 0; i < 40; i += 3) {
@@ -170,7 +170,7 @@ public class TestInsert2 {
             for (int i = 2; i < 40; i += 3) {
                 System.out.println("Inserting: " + i);
                 a1.insert(i);
-                if (i % 4 == 2) {
+                if (i % 4 == 1) {
                     try {
                         Thread.sleep(12);
                     } catch (InterruptedException e) {
@@ -192,7 +192,7 @@ public class TestInsert2 {
 
         }
 
-        int[] expected = {};
+        int[] expected = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39};
         assertEquals(Arrays.toString(expected), Arrays.toString(a1.getArray()));
     }
 
