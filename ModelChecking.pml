@@ -9,10 +9,11 @@ byte globalRWLock[2] = {0,0};
 
 // These flags indicate what operation their respective thread is currently performing
 // '0': non-critical
-// '1': insert
+// '1': insert -> requesting insert by pushing to queue
 // '2': cleanup
 // '3': delete
 // '4': member
+// '5': insert -> performing actual array insert
 byte flags[2] = {0,0};
 
 // The following lock allows for inserts to perform semi-concurrently
@@ -43,8 +44,17 @@ inline non_critical_section() {
     od
 }
 
+inline perform_operation() {
+    // Repeat for a non deterministic amount of time
+    int n = 0;
+    do
+        :: true -> skip;
+        :: true -> break;
+    od
+}
+
 inline insert() {
-    // Set operation flag to insert
+    // Set operation flag to requesting insert
     flags[_pid] = 1;
 
     // "Acquire a permit" from the sizeCheck semaphore (the acquisition of the permit itself should be atomic)
@@ -86,6 +96,11 @@ inline insert() {
             od
 
             // CRITICAL SECTION - INSERTING
+            flags[_pid] = 5;
+            // Stay inside this operation for a non-deterministic amount of time - not because insert is non deterministic but we want to allow time for SPIN to interleave
+            perform_operation();
+
+            int n = 1; // Don't know why but this is needed to prevent "jump into d_step sequence" error
 
             // Hand back the global write lock and drain queue lock
             d_step {
@@ -98,6 +113,110 @@ inline insert() {
     fi
 
     // Consider setting flags back to non critical when done
+    flags[_pid] = 0;
+}
+
+inline delete() {
+
+    // Acquire the global read lock
+    byte gRLock = 0;
+    do
+        :: (gRLock == 0) -> d_step {
+            if
+                :: (globalRWLock[0] != 2 && globalRWLock[1] != 2) -> globalRWLock[_pid] = 1; gRLock = 1;
+                :: else -> skip;
+            fi
+        }
+        :: else -> break;
+    od
+
+    // Once we have obtained the global read lock perform the operations
+
+    // CRITICAL SECTION - DELETING
+    // Set operation flag to delete
+    flags[_pid] = 3;
+
+    // Perform the operation
+    perform_operation();
+
+    // "Release a permit" from the sizeCheck semaphore (the release of the permit itself should be atomic)
+    // In Promela / SPIN we'll just check to make sure we don't exceed ARRAYSIZE so we don't accidentally give back too many permits
+    byte havePermit = 0;
+    do
+        :: (havePermit == 0) -> d_step {
+            if
+                :: (sizeCheck > 0) -> sizeCheck = sizeCheck - 1; havePermit = 1;
+                :: else -> skip;
+            fi
+        };
+        :: (havePermit == 1) -> break;
+    od
+
+    // Hand the read lock back now we're done
+    globalRWLock[_pid] = 0;
+
+    // Consider setting flags back to non critical when done
+    flags[_pid] = 0;
+}
+
+inline member() {
+
+    // Acquire the global read lock
+    byte gRLock = 0;
+    do
+        :: (gRLock == 0) -> d_step {
+            if
+                :: (globalRWLock[0] != 2 && globalRWLock[1] != 2) -> globalRWLock[_pid] = 1; gRLock = 1;
+                :: else -> skip;
+            fi
+        }
+        :: else -> break;
+    od
+
+    // Once we have obtained the global read lock perform the operations
+
+    // CRITICAL SECTION - MEMBER CHECKING
+    // Set operation flag to member check
+    flags[_pid] = 4;
+
+    // Perform the operation
+    perform_operation();
+
+    // Hand the read lock back now we're done
+    globalRWLock[_pid] = 0;
+
+    // Consider setting flags back to non critical when done
+    flags[_pid] = 0;
+}
+
+inline cleanup() {
+
+    // Acquire the global write lock
+    byte gWLock = 0;
+    do
+        :: (gWLock == 0) -> d_step {
+            if
+                :: (globalRWLock[0] == 0 && globalRWLock[1] == 0) -> globalRWLock[_pid] = 2; gWLock = 1;
+                :: else -> skip;
+            fi
+        }
+        :: else -> break;
+    od
+
+    // Once we have obtained the global write lock perform the operations
+
+    // CRITICAL SECTION - CLEANUP
+    // Set operation flag to cleanup
+    flags[_pid] = 2;
+
+    // Perform the operation
+    perform_operation();
+
+    // Hand the write lock back now we're done
+    globalRWLock[_pid] = 0;
+
+    // Consider setting flags back to non critical when done
+    flags[_pid] = 0;
 }
 
 // When we test this model in SPIN we assume weak fairness as in the Java implementation we set all locks and semaphore
@@ -112,3 +231,5 @@ active[2] proctype arrayThreads() {
         :: non_critical_section();
     od
 }
+
+// DEFINE LTL MUTEX PROPERTIES FOR TESTING BELOW
