@@ -131,6 +131,9 @@ public class UNSWArray {
             // We also need to now acquire the globalLock (writeLock) so we can update the array and ensure no other writes are occurring or readers are reading
             w.lock();
 
+            // Now check if value already exists
+            if (findIndex(x) == 1) return 1;
+
             // Try / finally construct recommended to ensure prevention of deadlock
             try {
                 // Drain the insert queue (up to a maximum of 100 integers at one time to prevent starvation of other potential reader threads) and insert into the array
