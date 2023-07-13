@@ -134,7 +134,7 @@ public class TestInsert2 {
     }
 
     @Test
-    public void TestThree() throws InterruptedException {
+    public void TestThreeThreads() throws InterruptedException {
         UNSWArray a1 = new UNSWArray(40);
 
         Thread thread1 = new Thread(() -> {

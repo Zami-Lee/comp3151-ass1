@@ -48,50 +48,77 @@ public class UNSWArray {
     // The calling function should IDEALLY (but not necessarily) have obtained the global read lock before calling this function
     // Finds the index of the value "x" in the array or returns -1 if not found
     // Comments within this function are sparse - it just works...
+    // private int findIndex(int x) {
+    //     int low = 0;
+    //     int high = array.length - 1;
+
+    //     while (low <= high) {
+    //         int mid = (low + high) / 2;
+    //         int localVal = array[mid];
+
+    //         if (localVal == x) {
+    //             return mid;
+    //         }else if (localVal == -1) {
+    //             int lowMid = mid; int highMid = mid;
+
+    //             while (array[lowMid] == -1 && lowMid > low) {
+    //                 lowMid--;
+    //             }
+
+    //             while (array[highMid] == -1 && highMid < high) {
+    //                 highMid++;
+    //             }
+
+    //             if (array[lowMid] == x) {
+    //                 return lowMid;
+    //             }else if (array[highMid] == x) {
+    //                 return highMid;
+    //             }else if (array[lowMid] == -1 && array[highMid] == -1) {
+    //                 return -1;
+    //             }else if (x < array[lowMid]) {
+    //                 high = lowMid - 1;
+    //             }else if (x > array[highMid]) {
+    //                 if (array[highMid] == -1) {
+    //                     high = mid - 1;
+    //                 }else {
+    //                     low = highMid + 1;
+    //                 }
+    //             }
+
+    //         }else if (localVal > x) {
+    //             high = mid - 1;
+    //         }else { //localVal < x
+    //             low = mid + 1;
+    //         }
+    //     }
+
+    //     return -1;
+    // }
+
     private int findIndex(int x) {
         int low = 0;
         int high = array.length - 1;
 
         while (low <= high) {
-            int mid = (low + high) / 2;
-            int localVal = array[mid];
+            int mid = low + (high - low) / 2;
 
-            if (localVal == x) {
+            // skip all negative values
+            while (array[mid] == -1 && mid < high) {
+                mid++;
+            }
+
+            if (mid > high) {
+                return -1;
+            }
+
+            if (array[mid] == x) {
                 return mid;
-            }else if (localVal == -1) {
-                int lowMid = mid; int highMid = mid;
-
-                while (array[lowMid] == -1 && lowMid > low) {
-                    lowMid--;
-                }
-
-                while (array[highMid] == -1 && highMid < high) {
-                    highMid++;
-                }
-
-                if (array[lowMid] == x) {
-                    return lowMid;
-                }else if (array[highMid] == x) {
-                    return highMid;
-                }else if (array[lowMid] == -1 && array[highMid] == -1) {
-                    return -1;
-                }else if (x < array[lowMid]) {
-                    high = lowMid - 1;
-                }else if (x > array[highMid]) {
-                    if (array[highMid] == -1) {
-                        high = mid - 1;
-                    }else {
-                        low = highMid + 1;
-                    }
-                }
-
-            }else if (localVal > x) {
-                high = mid - 1;
-            }else { //localVal < x
+            } else if (array[mid] < x) {
                 low = mid + 1;
+            } else {
+                high = mid - 1;
             }
         }
-
         return -1;
     }
 
