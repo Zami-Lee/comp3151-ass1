@@ -79,7 +79,7 @@ public class TestDelete2 {
 
         }
 
-        int[] expected = {-1, 1};
+        int[] expected = {-1, -1, -1, -1, 1};
         assertEquals(Arrays.toString(expected), Arrays.toString(a1.getArray()));
     }
 
