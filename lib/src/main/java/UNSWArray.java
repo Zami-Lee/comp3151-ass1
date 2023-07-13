@@ -26,31 +26,23 @@ public class UNSWArray {
 
     // === Private Helper Functions ===
 
+    private void swapElement(int x, int y) {
+        int temp = array[x];
+        array[x] = array[y];
+        array[y] = temp;
+    }
+
     // The calling function must have acquired the global write lock before using this function to ensure mutex
     // Provides the actual logic of inserting a value into the array
-    // This is currently O(n log n) needs to be replaced with O(n) logic
+    // Insert at beginning and keep swapping until order is correct - O(n) since the array is always sorted before insertion
     private void insertIntoArray(int val) {
         array[0] = val;
-        Arrays.sort(array,0,array.length);
 
-        // this maintains sorted order in O(n) but will shift all the -1 values to the right
-
-        // int insertIndex = 0;
-        // while (insertIndex < array.length && array[insertIndex] < val && array[insertIndex] != -1) {
-        //     insertIndex++;
-        // }
-        // // replaces the last -1 with value if posisble
-        // if (array[insertIndex] == -1) {
-        //     array[insertIndex] = val;
-
-        //     // otherwise shift everything down
-        // } else {
-        //     for (int i = array.length - 1; i > insertIndex; i--) {
-        //         array[i] = array[i - 1];
-        //     }
-        //     array[insertIndex] = val;
-        // }
-
+        for (int i = 0; i < array.length - 1; i++) {
+            if (array[i] > array[i+1]) {
+                swapElement(i, i+1);
+            }
+        }
     }
 
     // The calling function must have acquired the global write lock before using this function to ensure mutex
