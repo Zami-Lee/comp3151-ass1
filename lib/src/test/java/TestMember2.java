@@ -70,8 +70,8 @@ public class TestMember2 {
             } catch (InterruptedException e) {
 
             }
-            System.out.println("Asserting 17 not a member ");
-            assertTrue(!a1.member(17));
+            System.out.println("Asserting 16 not a member ");
+            assertTrue(!a1.member(16));
         });
 
         thread1.start();
