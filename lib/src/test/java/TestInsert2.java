@@ -33,7 +33,7 @@ public class TestInsert2 {
 
     @Test
     public void testInsertDuplicateElement() throws InterruptedException{
-        UNSWArray a1 = new UNSWArray(2);
+        UNSWArray a1 = new UNSWArray(3);
 
         Thread thread1 = new Thread(() -> {
             a1.insert(1);
@@ -53,7 +53,7 @@ public class TestInsert2 {
 
         }
 
-        int[] expected = {-1, 1};
+        int[] expected = {-1, -1, 1};
         assertEquals(Arrays.toString(expected), Arrays.toString(a1.getArray()));
     }
 

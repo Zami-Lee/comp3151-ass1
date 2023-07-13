@@ -84,6 +84,65 @@ public class TestDelete2 {
     }
 
     @Test
+    public void testDeleteMultiDuplicateElementMultithread() throws InterruptedException {
+        UNSWArray a1 = new UNSWArray(5);
+
+        Thread thread1 = new Thread(() -> {
+            for (int i = 0; i < 5; i++) {
+                System.out.println("Inserting: " + i);
+                a1.insert(i);
+
+                if (i % 2 == 0) {
+                    try {
+                        Thread.sleep(8);
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+            }
+        });
+
+        Thread thread2 = new Thread(() -> {
+            try {
+                // allow all inserts first
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+
+            }
+            a1.delete(0);
+            a1.delete(5);
+            a1.delete(3);
+        });
+
+        Thread thread3 = new Thread(() -> {
+            try {
+                // allow all inserts first
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+
+            }
+            a1.delete(0);
+            a1.delete(5);
+            a1.delete(3);
+        });
+
+        thread1.start();
+        thread2.start();
+        thread3.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+            thread3.join();
+        } catch (InterruptedException e) {
+
+        }
+
+        int[] expected = {-1, 1, 2, -1, 4};
+        assertEquals(Arrays.toString(expected), Arrays.toString(a1.getArray()));
+    }
+
+    @Test
     public void testDeleteInsertSameElement() throws InterruptedException {
         UNSWArray a1 = new UNSWArray(2);
 

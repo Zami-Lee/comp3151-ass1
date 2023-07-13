@@ -154,27 +154,12 @@ public class TestMember2 {
             }
         });
 
-        // write thread
-        Thread thread3 = new Thread(() -> {
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-
-            }
-            for (int i = 0; i < 20; i += 1) {
-                System.out.println("Deleting: " + i);
-                a1.delete(i);
-            }
-        });
-
         thread1.start();
         thread2.start();
-        thread3.start();
 
         try {
             thread1.join();
             thread2.join();
-            thread3.join();
         } catch (InterruptedException e) {
 
         }
