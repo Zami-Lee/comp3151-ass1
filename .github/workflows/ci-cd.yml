@@ -3,7 +3,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - master  # Change this to match your repository's default branch
+      - master
 
 jobs:
   build:
@@ -16,12 +16,10 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v2
       with:
-        java-version: 11  # Change this to match the JDK version you need
+        java-version: 11.0.16.1
 
     - name: Grant execute permission to Gradle wrapper
       run: chmod +x gradlew
 
     - name: Build and test
       run: ./gradlew test
-
-    # Add more steps or jobs as needed for deployment, code analysis, etc.
