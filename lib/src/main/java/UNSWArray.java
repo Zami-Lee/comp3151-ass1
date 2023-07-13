@@ -47,65 +47,22 @@ public class UNSWArray {
 
     // The calling function must have acquired the global write lock before using this function to ensure mutex
     // Provides the actual logic of the cleanup operation and pushes -1 values as far to the end as possible up to "upTo"
-    // This is currently O(n log n) needs to be updated with O(n) logic
+    // For all -1 values, swap until they reach the end - O(n) since the array is always sorted before
     private void forceCleanup(int upTo) {
         if (upTo <= 0) {
             return; //don't do any thing
-        }else{
-            Arrays.sort(array,0,upTo + 1);
+        } else {
+            for (int i = 0; i < upTo; i++) {
+                if (array[i+1] == -1) {
+                    swapElement(i, i+1);
+                }
+            }
         }
     }
 
     // The calling function should IDEALLY (but not necessarily) have obtained the global read lock before calling this function
     // Finds the index of the value "x" in the array or returns -1 if not found
     // Comments within this function are sparse - it just works...
-    // private int findIndex(int x) {
-    //     int low = 0;
-    //     int high = array.length - 1;
-
-    //     while (low <= high) {
-    //         int mid = (low + high) / 2;
-    //         int localVal = array[mid];
-
-    //         if (localVal == x) {
-    //             return mid;
-    //         }else if (localVal == -1) {
-    //             int lowMid = mid; int highMid = mid;
-
-    //             while (array[lowMid] == -1 && lowMid > low) {
-    //                 lowMid--;
-    //             }
-
-    //             while (array[highMid] == -1 && highMid < high) {
-    //                 highMid++;
-    //             }
-
-    //             if (array[lowMid] == x) {
-    //                 return lowMid;
-    //             }else if (array[highMid] == x) {
-    //                 return highMid;
-    //             }else if (array[lowMid] == -1 && array[highMid] == -1) {
-    //                 return -1;
-    //             }else if (x < array[lowMid]) {
-    //                 high = lowMid - 1;
-    //             }else if (x > array[highMid]) {
-    //                 if (array[highMid] == -1) {
-    //                     high = mid - 1;
-    //                 }else {
-    //                     low = highMid + 1;
-    //                 }
-    //             }
-
-    //         }else if (localVal > x) {
-    //             high = mid - 1;
-    //         }else { //localVal < x
-    //             low = mid + 1;
-    //         }
-    //     }
-
-    //     return -1;
-    // }
-
     private int findIndex(int x) {
         int low = 0;
         int high = array.length - 1;
