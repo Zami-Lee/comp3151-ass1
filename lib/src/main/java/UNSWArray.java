@@ -32,6 +32,25 @@ public class UNSWArray {
     private void insertIntoArray(int val) {
         array[0] = val;
         Arrays.sort(array,0,array.length);
+
+        // this maintains sorted order in O(n) but will shift all the -1 values to the right
+
+        // int insertIndex = 0;
+        // while (insertIndex < array.length && array[insertIndex] < val && array[insertIndex] != -1) {
+        //     insertIndex++;
+        // }
+        // // replaces the last -1 with value if posisble
+        // if (array[insertIndex] == -1) {
+        //     array[insertIndex] = val;
+
+        //     // otherwise shift everything down
+        // } else {
+        //     for (int i = array.length - 1; i > insertIndex; i--) {
+        //         array[i] = array[i - 1];
+        //     }
+        //     array[insertIndex] = val;
+        // }
+
     }
 
     // The calling function must have acquired the global write lock before using this function to ensure mutex
@@ -111,14 +130,17 @@ public class UNSWArray {
                 return -1;
             }
 
+            // return index of element
             if (array[mid] == x) {
                 return mid;
+
             } else if (array[mid] < x) {
                 low = mid + 1;
             } else {
                 high = mid - 1;
             }
         }
+        // if element does not exist
         return -1;
     }
 
@@ -158,11 +180,9 @@ public class UNSWArray {
             // We also need to now acquire the globalLock (writeLock) so we can update the array and ensure no other writes are occurring or readers are reading
             w.lock();
 
-            // Now check if value already exists
-            if (findIndex(x) == 1) return 1;
-
             // Try / finally construct recommended to ensure prevention of deadlock
             try {
+
                 // Drain the insert queue (up to a maximum of 100 integers at one time to prevent starvation of other potential reader threads) and insert into the array
                 for (int i = 0; i < 100; i++) {
                     // Remove the end of the queue / if it is empty returns null
@@ -175,6 +195,11 @@ public class UNSWArray {
 
                     // Cast-type to integer
                     int valToInsert = (int) valToInsertO;
+
+                    // do not insert duplicate
+                    if (findIndex(valToInsert) != -1) {
+                        return 1;
+                    }
 
                     // Now - actually insert the integer into the array
                     this.insertIntoArray(valToInsert);
