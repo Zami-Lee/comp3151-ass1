@@ -34,7 +34,7 @@ public class UNSWArray {
 
     // The calling function must have acquired the global write lock before using this function to ensure mutex
     // Provides the actual logic of inserting a value into the array
-    // Insert at beginning and keep swapping until order is correct - O(n) since the array is always sorted before insertion
+    // Insert element at beginning swap until order is correct - O(n) since the array is always sorted before insertion (ie insertion sort with only 1 pass)
     private void insertIntoArray(int val) {
         array[0] = val;
 
@@ -52,7 +52,7 @@ public class UNSWArray {
         if (upTo <= 0) {
             return; // don't do anything
         } else {
-            // iterate down from upto - 0 and put all non -1 values from upto
+            // read down from index upTo to index 0 and put all non -1 values immediately before index upTo
             int editIndex = upTo;
 
             for (int readIndex = upTo; readIndex > 0; readIndex--) {
@@ -63,6 +63,7 @@ public class UNSWArray {
             }
             if (editIndex <= 0) return;
 
+            // populate end of array with -1
             else {
                 for (int i = 0; i <= editIndex; i++) {
                     array[i] = -1;
