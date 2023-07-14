@@ -61,9 +61,10 @@ public class UNSWArray {
                     editIndex--;
                 }
             }
-            if (editIndex < 0) return;
+            if (editIndex <= 0) return;
+
             else {
-                for (int i = 0; i < editIndex; i++) {
+                for (int i = 0; i <= editIndex; i++) {
                     array[i] = -1;
                 }
             }
@@ -162,6 +163,10 @@ public class UNSWArray {
 
                     // Now - actually insert the integer into the array
                     this.insertIntoArray(valToInsert);
+
+                    // cleanup
+                    this.forceCleanup(findIndex(valToInsert));
+
                 }
 
             } finally {
