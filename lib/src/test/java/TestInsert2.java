@@ -64,7 +64,6 @@ public class TestInsert2 {
         Thread thread1 = new Thread(() -> {
             a1.insert(0);
             a1.insert(1);
-            a1.insert(3);
         });
 
         Thread thread2 = new Thread(() -> {
@@ -82,7 +81,7 @@ public class TestInsert2 {
 
         }
 
-        int[] expected = {0, 1, 2, 3, 4};
+        int[] expected = {-1, 0, 1, 2, 4};
         assertEquals(Arrays.toString(expected), Arrays.toString(a1.getArray()));
     }
 

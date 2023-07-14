@@ -38,6 +38,7 @@ public class TestDelete2 {
         assertEquals(Arrays.toString(expected), Arrays.toString(a1.getArray()));
     }
 
+
     @Test
     public void testDeleteDuplicateElementMultithread() throws InterruptedException {
         UNSWArray a1 = new UNSWArray(5);
