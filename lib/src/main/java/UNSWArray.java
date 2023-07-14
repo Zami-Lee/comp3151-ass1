@@ -63,7 +63,7 @@ public class UNSWArray {
             }
             if (editIndex <= 0) return;
 
-            // populate end of array with -1
+            // populate beginning of array with all the -1 values
             else {
                 for (int i = 0; i <= editIndex; i++) {
                     array[i] = -1;
