@@ -36,6 +36,7 @@ public class TestDelete2 {
 
         int[] expected = {-1};
         assertEquals(Arrays.toString(expected), Arrays.toString(a1.getArray()));
+        a1.print_sorted();
     }
 
 
@@ -82,6 +83,7 @@ public class TestDelete2 {
 
         int[] expected = {-1, -1, -1, -1, 1};
         assertEquals(Arrays.toString(expected), Arrays.toString(a1.getArray()));
+        a1.print_sorted();
     }
 
     @Test
@@ -141,6 +143,7 @@ public class TestDelete2 {
 
         int[] expected = {-1, 1, 2, -1, 4};
         assertEquals(Arrays.toString(expected), Arrays.toString(a1.getArray()));
+        a1.print_sorted();
     }
 
     @Test
@@ -252,6 +255,7 @@ public class TestDelete2 {
 
         int[] expected = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
         assertEquals(Arrays.toString(expected), Arrays.toString(a1.getArray()));
+        a1.print_sorted();
     }
 
     @Test
@@ -310,6 +314,57 @@ public class TestDelete2 {
         // all values up to 25 are deleted, then 25-119 all in array
         int[] expected = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119};
         assertEquals(Arrays.toString(expected), Arrays.toString(a1.getArray()));
+        a1.print_sorted();
+    }
+
+    @Test
+    public void testInsertAndDelete() throws InterruptedException {
+        UNSWArray a1 = new UNSWArray(30);
+
+        // insert all numbers
+        Thread thread1 = new Thread(() -> {
+            for (int i = 0; i < 30; i++) {
+                System.out.println("Inserting: " + i);
+                a1.insert(i);
+
+                if (i % 2 == 0) {
+                    try {
+                        Thread.sleep(8);
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+            }
+        });
+
+        // delete only odd numbers
+        Thread thread2 = new Thread(() -> {
+
+            for (int i = 0; i < 25; i++) {
+                System.out.println("Deleting: " + i);
+                a1.delete(i);
+
+                if (i % 2 == 0) {
+                    try {
+                        Thread.sleep(8);
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+            }
+        });
+
+        thread1.start();
+        thread2.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+
+        }
+
+        a1.print_sorted();
     }
 
 }
