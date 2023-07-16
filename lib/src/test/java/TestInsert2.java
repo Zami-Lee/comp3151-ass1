@@ -29,6 +29,7 @@ public class TestInsert2 {
 
         int[] expected = {-1, -1, -1, 0, 4};
         assertEquals(Arrays.toString(expected), Arrays.toString(a1.getArray()));
+        a1.print_sorted();
     }
 
     @Test
