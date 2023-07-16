@@ -14,6 +14,7 @@ public class UNSWArray {
     private final ReentrantReadWriteLock globalLock;
     private final Lock r;
     private final Lock w;
+    private int MAX_SIZE = 10001;
 
     // A queue to buffer insert operations - meaning in theory we can gather a number of insert operations in the queue and then apply them all at once
     private ArrayBlockingQueue<Integer> insertQueue;
@@ -145,7 +146,7 @@ public class UNSWArray {
             try {
 
                 // Drain the insert queue (up to a maximum of 100 integers at one time to prevent starvation of other potential reader threads) and insert into the array
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < MAX_SIZE; i++) {
                     // Remove the end of the queue / if it is empty returns null
                     Object valToInsertO = insertQueue.poll();
 
