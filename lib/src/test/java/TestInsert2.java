@@ -118,6 +118,7 @@ public class TestInsert2 {
 
                     }
                 }
+                a1.print_sorted();
             }
         });
 

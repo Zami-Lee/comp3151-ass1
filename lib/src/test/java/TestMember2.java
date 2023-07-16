@@ -166,4 +166,55 @@ public class TestMember2 {
 
     }
 
+    @Test public void testMemberAndPrint() throws InterruptedException {
+        UNSWArray a1 = new UNSWArray(20);
+
+        // write thread
+        Thread thread1 = new Thread(() -> {
+            for (int i = 0; i < 20; i += 1) {
+                System.out.println("Inserting: " + i);
+                a1.insert(i);
+            }
+        });
+
+        // read thread starts after
+        Thread thread2 = new Thread(() -> {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
+
+            for (int i = 0; i < 20; i += 1) {
+                System.out.println("Member check: " + i);
+                assertTrue(a1.member(i));
+            }
+        });
+
+        // read thread starts after
+        Thread thread3 = new Thread(() -> {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
+            for (int i = 0; i < 20; i += 1) {
+                a1.print_sorted();
+            }
+        });
+
+        thread1.start();
+        thread2.start();
+        thread3.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+            thread3.join();
+        } catch (InterruptedException e) {
+
+        }
+
+    }
+
 }
