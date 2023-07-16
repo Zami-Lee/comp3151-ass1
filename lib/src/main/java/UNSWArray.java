@@ -258,11 +258,13 @@ public class UNSWArray {
         // First acquire global read lock
         r.lock();
 
+        String sortedArray = " ";
+
         // Try / finally block for safety
         try {
             for (int i = 0; i < array.length; i++) {
                 if (array[i] != -1) {
-                    System.out.println(array[i]);
+                    sortedArray += array[i] + ", ";
                 }
             }
 
@@ -270,6 +272,8 @@ public class UNSWArray {
             r.unlock();
         }
 
+        sortedArray = sortedArray.replaceAll(", $", "");
+        System.out.print(sortedArray);
     }
 
     // === Constructors ===
