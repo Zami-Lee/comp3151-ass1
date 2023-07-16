@@ -54,8 +54,6 @@ inline perform_operation() {
 }
 
 inline insert() {
-    // Set operation flag to requesting insert
-    flags[_pid] = 1;
 
     // "Acquire a permit" from the sizeCheck semaphore (the acquisition of the permit itself should be atomic)
     // The act of acquiring this permit means we have been given room in the array to insert
@@ -69,6 +67,9 @@ inline insert() {
         };
         :: (havePermit == 1) -> break;
     od
+
+    // Set operation flag to requesting insert
+    flags[_pid] = 1;
 
     // Determine if we are the thread that will be draining the insert queue to actually perform the insertions into the array
     // This represents acquiring an exclusive insertQueueDrainLock lock as in the Java implementation
@@ -106,14 +107,14 @@ inline insert() {
             d_step {
                 // Atomically check that no other insert is waiting in the queue right before handing back the lock to prevent starvation of a queued insert
                 insertQueueDrainLock[_pid] = 0;
+                globalRWLock[_pid] = 0;
+                // Set flags back to non critical as we're done
+                flags[_pid] = 0;
             }
-            globalRWLock[_pid] = 0;
 
-        :: else -> skip;
+
+        :: else -> flags[_pid] = 0; skip; // Set flags back to non critical as we're done
     fi
-
-    // Consider setting flags back to non critical when done
-    flags[_pid] = 0;
 }
 
 inline delete() {
@@ -152,11 +153,15 @@ inline delete() {
         :: (havePermit == 1) -> break;
     od
 
-    // Hand the read lock back now we're done
-    globalRWLock[_pid] = 0;
+    int n = 1; // Don't know why but this is needed to prevent "jump into d_step sequence" error
 
-    // Consider setting flags back to non critical when done
-    flags[_pid] = 0;
+    d_step {
+        // Hand the read lock back now we're done
+        globalRWLock[_pid] = 0;
+
+        // Consider setting flags back to non critical when done
+        flags[_pid] = 0;
+    }
 }
 
 inline member() {
@@ -182,11 +187,15 @@ inline member() {
     // Perform the operation
     perform_operation();
 
-    // Hand the read lock back now we're done
-    globalRWLock[_pid] = 0;
+    int n = 1;
 
-    // Consider setting flags back to non critical when done
-    flags[_pid] = 0;
+    d_step {
+        // Hand the read lock back now we're done
+        globalRWLock[_pid] = 0;
+
+        // Consider setting flags back to non critical when done
+        flags[_pid] = 0;
+    }
 }
 
 inline cleanup() {
@@ -212,11 +221,15 @@ inline cleanup() {
     // Perform the operation
     perform_operation();
 
-    // Hand the write lock back now we're done
-    globalRWLock[_pid] = 0;
+    int n = 1;
 
-    // Consider setting flags back to non critical when done
-    flags[_pid] = 0;
+    d_step {
+        // Hand the write lock back now we're done
+        globalRWLock[_pid] = 0;
+
+        // Consider setting flags back to non critical when done
+        flags[_pid] = 0;
+    }
 }
 
 // When we test this model in SPIN we assume weak fairness as in the Java implementation we set all locks and semaphore
@@ -233,3 +246,14 @@ active[2] proctype arrayThreads() {
 }
 
 // DEFINE LTL MUTEX PROPERTIES FOR TESTING BELOW
+ltl boundedSize {[]!(sizeCheck < 0 || sizeCheck > ARRAYSIZE)}
+ltl mutex {[]!((flags[0] == 2 && flags[1] > 1) || (flags[0] == 5 && flags[1] > 1))}
+
+
+// These flags indicate what operation their respective thread is currently performing
+// '0': non-critical
+// '1': insert request -> requesting insert by pushing to queue
+// '2': cleanup
+// '3': delete
+// '4': member
+// '5': insert -> performing actual array insert
