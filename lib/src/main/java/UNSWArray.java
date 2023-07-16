@@ -252,6 +252,26 @@ public class UNSWArray {
         return returnVal;
     }
 
+    // Public facing print function
+    // Prints out the set of elements in sorted order.
+    public void print_sorted() {
+        // First acquire global read lock
+        r.lock();
+
+        // Try / finally block for safety
+        try {
+            for (int i = 0; i < array.length; i++) {
+                if (array[i] != -1) {
+                    System.out.println(array[i]);
+                }
+            }
+
+        } finally {
+            r.unlock();
+        }
+
+    }
+
     // === Constructors ===
 
     public UNSWArray(int size) {
